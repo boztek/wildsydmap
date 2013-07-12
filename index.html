@@ -60,9 +60,23 @@
                     success: function (data) {
 
                         console.log(data);
+                        var add_marker = function (id, point, note) {
+                            var info_window = new google.maps.InfoWindow({content: ''});
+
+                            function add_marker(racer_id, point, note) {
+                                var marker = new google.maps.Marker({map: map, position: point, clickable: true});
+                                marker.note = note;
+                                google.maps.event.addListener(marker, 'click', function () {
+                                    info_window.content = marker.note;
+                                    info_window.open(map, marker);
+                                });
+                                return marker;
+                            }
+                        }
 
                         for (var i = 0; i < data.data.length; ++i) {
                             var image = data.data[i].images.thumbnail.url;
+                            var full_image = data.data[i].images.standard_resolution.url;
 
                             if (data.data[i].location === null) {
                                 continue;
@@ -71,14 +85,24 @@
                             var lon = data.data[i].location.longitude;
 
                             var myLatlng = new google.maps.LatLng(lat, lon);
+                            var icon_size = new google.maps.Size(50, 50);
+                            var icon = {
+                                scaledSize: icon_size,
+                                url: image
+                            };
                             console.log(image);
                             var marker = new google.maps.Marker({
                                 position: myLatlng,
                                 map: map,
                                 title: "Hello World!",
-                                icon: image
+                                icon: icon
                             });
-
+                            marker.info = new google.maps.InfoWindow({
+                                content: '<img width=300 src="' +image+ '" />',
+                            });
+                            google.maps.event.addListener(marker, 'click', function () {
+                                this.info.open(map, this);
+                            });
                         }
 
                     }
