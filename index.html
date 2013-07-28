@@ -19,6 +19,10 @@
             font-size: 16px;
         }
 
+        h4 {
+            font-size: 0.8em;
+        }
+
         a.instagram, a.instagram:visited {
             color: #DAA520;
             text-decoration: none;
@@ -36,6 +40,33 @@
             height: 100%;
             width: 90%;
             float: right;
+        }
+
+        .instagram-caption,
+        .instagram-comments,
+        .instagram-comments-comment {
+            width: 320px;
+        }
+
+        .instagram-comments-comment {
+            list-style: none;
+            font-size: 0.9em;
+            margin-bottom: 0.5em;
+            display: block;
+            text-transform: none;
+            clear: both;
+        }
+        .instagram-comments-comment-profile {
+            width: 25px;
+            height: 25px;
+            margin-right: 1em;
+            float: left;
+        }
+
+        .instagram-author-info {
+            font-size: 0.8em;
+        }
+        .instagram-date {
         }
     </style>
     <script src="js/jquery-1.10.2.js"></script>
@@ -95,10 +126,14 @@
                         }
 
                         for (var i = 0; i < data.data.length; ++i) {
-                            // console.log(data.data[i]);
-                            var image = data.data[i].images.thumbnail.url;
-                            var full_image = data.data[i].images.standard_resolution.url;
-                            var full_name = data.data[i].caption.from.full_name;
+                            var instagram_data = data.data[i];
+                            // console.log(instagram_data);
+                            var image = instagram_data.images.thumbnail.url;
+                            var full_image = instagram_data.images.standard_resolution.url;
+                            var full_name = instagram_data.caption.from.full_name;
+                            var created_time = instagram_data.created_time;
+                            var created_date = new Date(parseInt(created_time) * 1000);
+                            var caption = instagram_data.caption.text;
 
                             if (data.data[i].location === null) {
                                 continue;
@@ -107,12 +142,11 @@
                             var lon = data.data[i].location.longitude;
 
                             var myLatlng = new google.maps.LatLng(lat, lon);
-                            var icon_size = new google.maps.Size(50, 50);
+                            var icon_size = new google.maps.Size(60, 60);
                             var icon = {
                                 scaledSize: icon_size,
                                 url: image
                             };
-                            // console.log(image);
                             var marker = new google.maps.Marker({
                                 position: myLatlng,
                                 map: map,
@@ -125,19 +159,31 @@
                                 var this_comment = {};
                                 this_comment.name = comments_data[j].from.full_name;
                                 this_comment.text = comments_data[j].text;
+                                this_comment.profile_picture = comments_data[j].from.profile_picture;
                                 comments.push(this_comment);
                             }
                             // console.log(comments);
-                            var comments_text = '<h4>Comments<h4><ul>';
+                            var comments_text = '<div class="instagram-comments>"><h4>Comments<h4><ul>';
                             for (var k = 0; k < comments.length; k++) {
-                                var comment_text = '<li>' +comments[k].name+ ': ' +comments[k].text+ '</li>'
+                                var comment_text = '<li class="instagram-comments-comment">' +
+                                                    '<img class="instagram-comments-comment-profile" src="' +comments[k].profile_picture+ '" />' +
+                                                    comments[k].name + ': ' + comments[k].text +
+                                                    '</li>'
                                 comments_text += comment_text;
                             }
-                            comments_text += '</ul>';
+                            comments_text += '</ul></div> <!-- //end instagram-comments -->';
                             
+                            var created_date_string = (created_date.getMonth()+1)+"/"+created_date.getDate()+"/"+created_date.getFullYear();
                             marker.info = new google.maps.InfoWindow({
-                                content: '<h3>' +full_name+ '</h3><img width=300 src="' +image+ '" />' + comments_text,
+                                content: '<a href="' +instagram_data.link+ '"><img width=360 src="' +image+ '" /></a>' +
+                                         '<div class="instagram-caption">' +caption+ '</div>' +
+                                         '<div class="instagram-author-info">Taken by ' +full_name+ ' <span class="instagram-date"> (' +created_date_string+ ')</div></div>'
                             });
+
+                            if (comments.length > 0) {
+                                marker.info.content += comments_text;
+                            }
+
                             google.maps.event.addListener(marker, 'click', function () {
                                 this.info.open(map, this);
                             });
