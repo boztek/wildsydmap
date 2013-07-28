@@ -17,6 +17,8 @@
             text-transform: uppercase;
             font-family: "arial", "san serif";
             font-size: 16px;
+
+
         }
 
         h4 {
@@ -36,6 +38,10 @@
             text-decoration: underline;
         }
 
+        #dialog-modal {
+            display: none;
+        }
+
         #map-canvas {
             height: 100%;
             width: 90%;
@@ -46,6 +52,10 @@
         .instagram-comments,
         .instagram-comments-comment {
             width: 320px;
+        }
+
+        .instagram-image-std {
+            margin-top: 1em;
         }
 
         .instagram-comments-comment {
@@ -69,7 +79,10 @@
         .instagram-date {
         }
     </style>
+    <link rel="stylesheet" type="text/css" href="css/jquery-ui.css" />
+    <link rel="stylesheet" type="text/css" href="css/jquery.ui.dialog.css" />
     <script src="js/jquery-1.10.2.js"></script>
+    <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
     <script type="text/javascript"
             src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBXWYSYuzbLCbBf7ulR43jd4ZgXuycuk4Y&sensor=true">
     </script>
@@ -92,8 +105,18 @@
 
         jQuery(function () {
             var map = initialize();
-
-            var access_token = window.location.href.split('#')[1].split('=')[1];
+            var path = window.location.href || '';
+            var access_token = '';
+            if (path.split('#').length > 1) {
+                access_token = path.split('#')[1].split('=')[1];
+            }
+            else {
+                jQuery( "#dialog-modal" ).dialog({
+                    height: 140,
+                    modal: true
+                });
+                return;
+            }
             var ig_api = instagram_end + access_token;
             // console.log(ig_api);
 
@@ -175,7 +198,7 @@
                             
                             var created_date_string = (created_date.getMonth()+1)+"/"+created_date.getDate()+"/"+created_date.getFullYear();
                             marker.info = new google.maps.InfoWindow({
-                                content: '<a href="' +instagram_data.link+ '"><img width=360 src="' +image+ '" /></a>' +
+                                content: '<a href="' +instagram_data.link+ '"><img class="instagram-image-std" width=360 src="' +image+ '" /></a>' +
                                          '<div class="instagram-caption">' +caption+ '</div>' +
                                          '<div class="instagram-author-info">Taken by ' +full_name+ ' <span class="instagram-date"> (' +created_date_string+ ')</div></div>'
                             });
@@ -225,6 +248,9 @@
     </script>
 </head>
 <body>
+    <div id="dialog-modal" title="Connect to Instagram">
+        <p>Log in to Instagram using the link provided.</p>
+    </div>
     <div class="container">
         <a href="/">
             <img src="img/logo.png">
