@@ -38,7 +38,7 @@
             text-decoration: underline;
         }
 
-        #dialog-modal {
+        #dialog-modal, #dialog-confirm {
             display: none;
         }
 
@@ -111,10 +111,21 @@
                 access_token = path.split('#')[1].split('=')[1];
             }
             else {
-                jQuery( "#dialog-modal" ).dialog({
-                    height: 140,
-                    modal: true
-                });
+                jQuery(function() {
+                    jQuery( "#dialog-confirm" ).dialog({
+                      resizable: false,
+                      height:140,
+                      modal: true,
+                      buttons: {
+                        "Connect": function() {
+                            window.location.href = 'https://instagram.com/oauth/authorize/?client_id=2263f091c81742ceb20d2d3ee57197a0&redirect_uri=http://wildsyd.dev:9999&response_type=token';
+                        },
+                        Cancel: function() {
+                          $( this ).dialog( "close" );
+                        }
+                      }
+                    });
+                  });
                 return;
             }
             var ig_api = instagram_end + access_token;
@@ -248,9 +259,9 @@
     </script>
 </head>
 <body>
-    <div id="dialog-modal" title="Connect to Instagram">
-        <p>Log in to Instagram using the link provided.</p>
-    </div>
+    <div id="dialog-confirm" title="Connect to Instagram">
+  <p><span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span>Connect to Instagram to see latest #wildsydney finds.</p>
+</div>
     <div class="container">
         <a href="/">
             <img src="img/logo.png">
