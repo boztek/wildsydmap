@@ -115,10 +115,12 @@
         }
 //        google.maps.event.addDomListener(window, 'load', initialize);
 
-        var instagram_end = 'https://api.instagram.com/v1/tags/wildsydney/media/recent?access_token=';
+        var instagram_end_raw     = 'https://api.instagram.com/v1/';
+        var instagram_end_default = 'https://api.instagram.com/v1/tags/wildsydney/media/recent?access_token=';
 
         jQuery(function () {
             var map = initialize();
+            var markers = [];
             var path = window.location.href || '';
             var access_token = '';
             if (path.split('#').length > 1) {
@@ -142,135 +144,101 @@
                   });
                 return;
             }
-            var ig_api = instagram_end + access_token;
-            // console.log(ig_api);
 
-            var tag = "wildsydney";
-            var count = 4;
-            var access_parameters = {access_token: access_token};
+            function createImageGrabber(api) {
+                return function () {
 
-            function grabImages(access_parameters) {
+                    jQuery.ajax({
+                        type: "GET",
+                        dataType: "jsonp",
+                        cache: false,
+                        url: api,
+                        success: function (data) {
+                            // console.log(data);
+                            for (var z = 0; z < markers.length; z++) {
+                                markers[z].setMap(null);
+                            }
+                            for (var i = 0; i < data.data.length; ++i) {
+                                var instagram_data = data.data[i];
+                                // console.log(instagram_data);
+                                var image = instagram_data.images.standard_resolution.url;
+                                var full_image = instagram_data.images.standard_resolution.url;
+                                var full_name = instagram_data.caption.from.full_name;
+                                var created_time = instagram_data.created_time;
+                                var created_date = new Date(parseInt(created_time) * 1000);
+                                var caption = instagram_data.caption.text;
 
-                jQuery.ajax({
-                    type: "GET",
-                    dataType: "jsonp",
-                    cache: false,
-                    url: ig_api,
-                    success: function (data) {
+                                if (data.data[i].location === null) {
+                                    continue;
+                                }
+                                var lat = data.data[i].location.latitude;
+                                var lon = data.data[i].location.longitude;
 
-                        console.log(data);
-                        var add_marker = function (id, point, note) {
-                            var info_window = new google.maps.InfoWindow({content: ''});
-
-                            function add_marker(racer_id, point, note) {
-                                var marker = new google.maps.Marker({map: map, position: point, clickable: true});
-                                marker.note = note;
-                                google.maps.event.addListener(marker, 'click', function () {
-                                    info_window.content = marker.note;
-                                    info_window.open(map, marker);
+                                var myLatlng = new google.maps.LatLng(lat, lon);
+                                var icon_size = new google.maps.Size(32, 32);
+                                var icon = {
+                                    scaledSize: icon_size,
+                                    url: image
+                                };
+                                var marker = new google.maps.Marker({
+                                    position: myLatlng,
+                                    map: map,
+                                    title: full_name,
+                                    icon: icon
                                 });
-                                return marker;
+                                markers.push(marker);
+                                var comments = [];
+                                var comments_data = data.data[i].comments.data;
+                                for (var j = 0; j < comments_data.length; j++) {
+                                    var this_comment = {};
+                                    this_comment.name = comments_data[j].from.full_name;
+                                    this_comment.text = comments_data[j].text;
+                                    this_comment.profile_picture = comments_data[j].from.profile_picture;
+                                    comments.push(this_comment);
+                                }
+                                // console.log(comments);
+                                var comments_text = '<div class="instagram-comments>"><h4>Comments<h4><ul>';
+                                for (var k = 0; k < comments.length; k++) {
+                                    var comment_text = '<li class="instagram-comments-comment cf">' +
+                                                        '<img class="instagram-comments-comment-profile" src="' +comments[k].profile_picture+ '" />' +
+                                                        comments[k].name + ': ' + comments[k].text +
+                                                        '</li>'
+                                    comments_text += comment_text;
+                                }
+                                comments_text += '</ul></div> <!-- //end instagram-comments -->';
+
+                                var created_date_string = (created_date.getMonth()+1)+"/"+created_date.getDate()+"/"+created_date.getFullYear();
+                                marker.info = new google.maps.InfoWindow({
+                                    content: '<a href="' +instagram_data.link+ '" target="_blank"><img class="instagram-image-std" width=360 src="' +full_image+ '" /></a>' +
+                                             '<div class="instagram-caption">' +caption+ '</div>' +
+                                             '<div class="instagram-author-info">Taken by ' +full_name+ ' <span class="instagram-date"> (' +created_date_string+ ')</div></div>'
+                                });
+
+                                if (comments.length > 0) {
+                                    marker.info.content += comments_text;
+                                }
+
+                                google.maps.event.addListener(marker, 'click', function () {
+                                    this.info.open(map, this);
+                                });
                             }
                         }
-
-                        for (var i = 0; i < data.data.length; ++i) {
-                            var instagram_data = data.data[i];
-                            // console.log(instagram_data);
-                            // var image = instagram_data.images.thumbnail.url;
-                            var image = instagram_data.images.standard_resolution.url;                            
-                            var full_image = instagram_data.images.standard_resolution.url;
-                            var full_name = instagram_data.caption.from.full_name;
-                            var created_time = instagram_data.created_time;
-                            var created_date = new Date(parseInt(created_time) * 1000);
-                            var caption = instagram_data.caption.text;
-
-                            if (data.data[i].location === null) {
-                                continue;
-                            }
-                            var lat = data.data[i].location.latitude;
-                            var lon = data.data[i].location.longitude;
-
-                            var myLatlng = new google.maps.LatLng(lat, lon);
-                            var icon_size = new google.maps.Size(32, 32);
-                            var icon = {
-                                scaledSize: icon_size,
-                                url: image
-                            };
-                            var marker = new google.maps.Marker({
-                                position: myLatlng,
-                                map: map,
-                                title: full_name,
-                                icon: icon
-                            });
-                            var comments = [];
-                            var comments_data = data.data[i].comments.data;
-                            for (var j = 0; j < comments_data.length; j++) {
-                                var this_comment = {};
-                                this_comment.name = comments_data[j].from.full_name;
-                                this_comment.text = comments_data[j].text;
-                                this_comment.profile_picture = comments_data[j].from.profile_picture;
-                                comments.push(this_comment);
-                            }
-                            // console.log(comments);
-                            var comments_text = '<div class="instagram-comments>"><h4>Comments<h4><ul>';
-                            for (var k = 0; k < comments.length; k++) {
-                                var comment_text = '<li class="instagram-comments-comment cf">' +
-                                                    '<img class="instagram-comments-comment-profile" src="' +comments[k].profile_picture+ '" />' +
-                                                    comments[k].name + ': ' + comments[k].text +
-                                                    '</li>'
-                                comments_text += comment_text;
-                            }
-                            comments_text += '</ul></div> <!-- //end instagram-comments -->';
-                            
-                            var created_date_string = (created_date.getMonth()+1)+"/"+created_date.getDate()+"/"+created_date.getFullYear();
-                            marker.info = new google.maps.InfoWindow({
-                                content: '<a href="' +instagram_data.link+ '" target="_blank"><img class="instagram-image-std" width=360 src="' +full_image+ '" /></a>' +
-                                         '<div class="instagram-caption">' +caption+ '</div>' +
-                                         '<div class="instagram-author-info">Taken by ' +full_name+ ' <span class="instagram-date"> (' +created_date_string+ ')</div></div>'
-                            });
-
-                            if (comments.length > 0) {
-                                marker.info.content += comments_text;
-                            }
-
-                            google.maps.event.addListener(marker, 'click', function () {
-                                this.info.open(map, this);
-                            });
-                        }
-
-                    }
-                });
-            }
-
-            function onDataLoaded(instagram_data) {
-
-                if (instagram_data.meta.code == 200) {
-
-                    var photos = instagram_data.data;
-
-                    if (photos.length > 0) {
-
-                        for (var key in photos) {
-                            var photo = photos[key];
-                            $('#target').append('<img src =' + photo.images.thumbnail.url + '">');
-                        }
-                    } else {
-
-                        $("#target").append("Hmmm. I couldn't find anything!");
-                    }
-                } else {
-
-                    var error = data.meta.error_message;
-                    $("#target").append('Something happened, Instagram said:' + error);
-
+                    });
                 }
-
             }
 
+            var ig_api = instagram_end_default + access_token;
+            var grabImages = createImageGrabber(ig_api);
+            grabImages();
 
-            grabImages(access_parameters);
+            $('#tag-search').submit(function (e) {
+                var tag = $('#tag-search input[type=textfield]').val();
+                var instagram_tag_search_api = instagram_end_raw + 'tags/' +tag+ '/media/recent?access_token=' + access_token;
+                var imageGrab = createImageGrabber(instagram_tag_search_api);
+                imageGrab();
+                return false;
+            });
         });
-
     </script>
 </head>
 <body>
@@ -282,6 +250,10 @@
             <img src="img/logo.png">
         </a>
         <a class="instagram" href="https://instagram.com/oauth/authorize/?client_id=2263f091c81742ceb20d2d3ee57197a0&redirect_uri=http://wildsyd.dev:9999&response_type=token">Login to Instagram</a>
+        <form id="tag-search">
+            <input type="textfield" name="tag-search" placeholder="Search for a tag ..." />
+            <input type="submit" value="Search" />
+        </form>
     </div>
     <div id="map-canvas" />
 </body>
