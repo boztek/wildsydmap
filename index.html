@@ -12,8 +12,8 @@
             height: 100%;
             margin: 0;
             padding: 0;
-            background-color: #595959;
-            color: #DAA520;
+            background-color: #333333;
+            color: #ffcc66;
             text-transform: uppercase;
             font-family: "Lucida Grande", "arial", "san serif";
             font-size: 16px;
@@ -30,7 +30,7 @@
         }
 
         a.instagram, a.instagram:visited {
-            color: #DAA520;
+            color: #ffcc66;
             text-decoration: none;
             /*padding: 1em;*/
             position: absolute;
@@ -92,9 +92,38 @@
         .cf:after {
             clear: both;
         }
+
+        #tag-search input {
+            border:0; 
+            padding:10px; 
+            font-size:1.3em; 
+            font-family:Arial, sans-serif; 
+            color:#aaa; 
+            border:solid 1px #ccc; 
+            margin:0 0 20px; 
+            width:300px;
+            -webkit-border-radius: 6px;
+            -moz-border-radius: 6px;
+            border-radius: 6px;
+            color: #4e6f59;
+        }
+        #tag-search input[type=textfield] {
+            float: right;
+            margin-right: 8em;
+            -moz-box-shadow: inset 0 0 4px rgba(0,0,0,0.2); 
+            -webkit-box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.2); 
+            box-shadow: inner 0 0 4px rgba(0, 0, 0, 0.2);
+        }
+
+        #tag-search input[type=submit] {
+            position: absolute;
+            right: 1em;
+            width: 6em;
+        }
     </style>
     <link rel="stylesheet" type="text/css" href="css/jquery-ui.css" />
     <link rel="stylesheet" type="text/css" href="css/jquery.ui.dialog.css" />
+    <script src="js/ig-access.js"></script>
     <script src="js/jquery-1.10.2.js"></script>
     <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
     <script type="text/javascript"
@@ -119,6 +148,9 @@
         var instagram_end_default = 'https://api.instagram.com/v1/tags/wildsydney/media/recent?access_token=';
 
         jQuery(function () {
+            // config
+            //App.Wildsyd.config.client_id;
+            // App.Wildsyd.config.redirect_uri;
             var map = initialize();
             var markers = [];
             var path = window.location.href || '';
@@ -128,13 +160,14 @@
             }
             else {
                 jQuery(function() {
+                    ig_auth = 'https://instagram.com/oauth/authorize/?client_id=' +window.Wildsyd.client_id+ '&redirect_uri=' +window.Wildsyd.redirect_uri+ '&response_type=token'
                     jQuery( "#dialog-confirm" ).dialog({
                       resizable: false,
                       height:140,
                       modal: true,
                       buttons: {
                         "Connect": function() {
-                            window.location.href = 'https://instagram.com/oauth/authorize/?client_id=2263f091c81742ceb20d2d3ee57197a0&redirect_uri=http://wildsyd.dev:9999&response_type=token';
+                            window.location.href = ig_auth;
                         },
                         Cancel: function() {
                           $( this ).dialog( "close" );
