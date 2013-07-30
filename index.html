@@ -154,6 +154,8 @@
             // App.Wildsyd.config.redirect_uri;
             var map = initialize();
             var markers = [];
+            var infowindow = new google.maps.InfoWindow();
+            var info_content = [];
             var path = window.location.href || '';
             var access_token = '';
             if (path.split('#').length > 1) {
@@ -242,6 +244,12 @@
                                 comments_text += '</ul></div> <!-- //end instagram-comments -->';
 
                                 var created_date_string = (created_date.getMonth()+1)+"/"+created_date.getDate()+"/"+created_date.getFullYear();
+
+                                // save info content for this marker
+                                info_content[i] = '<a href="' +instagram_data.link+ '" target="_blank"><img class="instagram-image-std" width=360 src="' +full_image+ '" /></a>' +
+                                             '<div class="instagram-caption">' +caption+ '</div>' +
+                                             '<div class="instagram-author-info">Taken by ' +full_name+ ' <span class="instagram-date"> (' +created_date_string+ ')</div></div>';
+
                                 marker.info = new google.maps.InfoWindow({
                                     content: '<a href="' +instagram_data.link+ '" target="_blank"><img class="instagram-image-std" width=360 src="' +full_image+ '" /></a>' +
                                              '<div class="instagram-caption">' +caption+ '</div>' +
@@ -249,13 +257,19 @@
                                 });
 
                                 if (comments.length > 0) {
+                                    info_content[i] += comments_text;
                                     marker.info.content += comments_text;
                                 }
 
                                 google.maps.event.addListener(marker, 'click', function () {
+                                    if (infowindow) {
+                                        infowindow.close();
+                                    }
                                     this.info.open(map, this);
+                                    infowindow = this.info;
                                 });
                             }
+                            // console.log(info_content);
                         }
                     });
                 }
