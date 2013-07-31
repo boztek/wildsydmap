@@ -1,4 +1,6 @@
 - info window style (bubbly, contrast)
+- logout button move to bottom of sidebar list
+- limit searches by current location?
 - location for name (hover etc.) instead of user
 - logo and layout styles
 - search indicator
