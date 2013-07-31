@@ -284,7 +284,7 @@
             grabImages();
 
             $('#tag-search').submit(function (e) {
-                var tag = $('#tag-search input[type=textfield]').val();
+                var tag = $('#tag-search input[type=textfield]').val() || 'wildsydney';
                 var instagram_tag_search_api = instagram_end_raw + 'tags/' +tag+ '/media/recent?access_token=' + access_token;
                 for (var z = 0; z < markers.length; z++) {
                     markers[z].setMap(null);
