@@ -22,6 +22,10 @@
         h4 {
             font-size: 0.8em;
         }
+        h4.comments {
+            color: #333333;
+            font-weight: bold;
+        }
 
         ul {
             padding-left: 2em;
@@ -90,6 +94,7 @@
         .instagram-comments,
         .instagram-comments-comment {
             width: 320px;
+            color: #333333;
         }
 
         .instagram-image-std {
@@ -103,18 +108,26 @@
             display: block;
             text-transform: none;
             clear: both;
+            color: #333333;
+
         }
         .instagram-comments-comment-profile {
             width: 50px;
             height: 50px;
             margin-right: 1em;
             float: left;
+            color: #333333;
+
         }
 
         .instagram-author-info {
             font-size: 0.8em;
+            color: #333333;
+
         }
         .instagram-date {
+            color: #333333;
+
         }
 
         .cf:before,
@@ -276,7 +289,7 @@
                         comments.push(this_comment);
                     }
                     // console.log(comments);
-                    var comments_text = '<div class="instagram-comments>"><h4>Comments<h4><ul>';
+                    var comments_text = '<div class="instagram-comments>"><h4 class="comments">Comments<h4><ul>';
                     for (var k = 0; k < comments.length; k++) {
                         var comment_text = '<li class="instagram-comments-comment cf">' +
                                             '<img class="instagram-comments-comment-profile" src="' +comments[k].profile_picture+ '" />' +
