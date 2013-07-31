@@ -17,8 +17,6 @@
             text-transform: uppercase;
             font-family: "Lucida Grande", "arial", "san serif";
             font-size: 16px;
-
-
         }
 
         h4 {
@@ -29,25 +27,61 @@
             padding-left: 2em;
         }
 
-        a.instagram, a.instagram:visited {
+        .logo {
+            float: left;
+            width: 5%;
+        }
+
+        .login {
+            display: block;
+            width: 40%;
+            float: left;
+            margin-top: 2em;
+        }
+        a, a.instagram, a.instagram:visited {
             color: #ffcc66;
             text-decoration: none;
-            /*padding: 1em;*/
-            position: absolute;
-            top: 1em;
             padding: 0.5em 2em 1em 2em;
             font-size: 0.8em
+            display: block;
         }
         a.instagram:hover {
             text-decoration: underline;
         }
 
-        #dialog-modal, #dialog-confirm {
-            display: none;
+        .info {
+            font-size: 0.7em;
+            margin: auto auto;
         }
 
+        #dialog-modal, #dialog-confirm {
+            display: none;
+
+            font-size: 0.7em;
+            width: 480px;
+            height: 480px;
+        }
+        .ui-dialog {
+            width: 640px !important;
+        }
+        #about {
+            display: none;
+            font-size: 0.7em;
+            text-transform: none;
+        }
+
+        .container-header {
+            height: 10%;
+            width: 100%;
+            position: relative;
+        }
+        .container-sidebar {
+            width: 10%;
+            min-width: 50px;
+            float: left;
+        }
         #map-canvas {
-            height: 100%;
+            height: 90%;
             width: 90%;
             float: right;
         }
@@ -93,6 +127,14 @@
             clear: both;
         }
 
+        #tag-search {
+            width: 50%;
+            height: 100%;
+            position: absolute;
+            /*border: 1px solid red;*/
+            top: 1em;
+            right: 0;
+        }
         #tag-search input {
             border:0; 
             padding:10px; 
@@ -100,7 +142,7 @@
             font-family:Arial, sans-serif; 
             color:#aaa; 
             border:solid 1px #ccc; 
-            margin:0 0 20px; 
+            /*margin:0 0 20px; */
             width:300px;
             -webkit-border-radius: 6px;
             -moz-border-radius: 6px;
@@ -108,19 +150,23 @@
             color: #4e6f59;
         }
         #tag-search input[type=textfield] {
-            float: right;
             margin-right: 8em;
             -moz-box-shadow: inset 0 0 4px rgba(0,0,0,0.2); 
             -webkit-box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.2); 
             box-shadow: inner 0 0 4px rgba(0, 0, 0, 0.2);
+            position: absolute;
+            right: 0;
+            /*top: 0.5em;*/
         }
 
         #tag-search input[type=submit] {
             position: absolute;
             right: 1em;
             width: 6em;
+            /*top: 0.5em;*/
         }
     </style>
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
     <link rel="stylesheet" type="text/css" href="css/jquery-ui.css" />
     <link rel="stylesheet" type="text/css" href="css/jquery.ui.dialog.css" />
     <script src="js/ig-access.js"></script>
@@ -176,6 +222,19 @@
                   });
                 return;
             }
+
+            $('.info-about').click(function (e) {
+                $( "#about" ).dialog({
+                      modal: true,
+                      height: 480,
+                      buttons: {
+                        Ok: function() {
+                          $( this ).dialog( "close" );
+                        }
+                      }
+                    });
+                    return false;
+            });
 
             function renderMarkers(data) {
                 for (var i = 0; i < data.length; ++i) {
@@ -301,15 +360,49 @@
     <div id="dialog-confirm" title="Connect to Instagram">
   <p><span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span>Connect to Instagram to see latest #wildsydney finds.</p>
 </div>
-    <div class="container">
+
+    <div id="about" title="About">
+        <h2>ABOUT<h2>
+        <p>The #WildSydney food map is a user generated initiative, mapping the
+        free food and medicine plants (both native and non native) living in the
+        Sydney basin. Following many years of experience providing workshops
+        and tours educating the public on the useful weeds to be found and
+        foraged in the urban landscape,Naturalist Diego Bonetto in collaboration
+        with producer Adrian O’Doherty have created a reliable and extended
+        map 'harvesting' photographs from instagram to provide a platform for
+        sharing location and seasonal information. The development of the
+        Instagram and Google map API mashup was made possible thanks to Boris Gordon.</p>
+
+        <p>Responding to ever-growing interest of the catering industry, gardeners, 
+        alternative medicine practitioners and sustainability advocates,
+        #WildSydney will provide an online resource where people can engage 
+        by positively identifying a variety of plant species, learn about the plants 
+        uses and locate safe and clean gathering locations.</p>
+
+        <p>Why? We believe Dandelions make the best coffee, but do we know where 
+        to collect them from the wild? #wildsydney will facilitate this exchange of 
+        information, fostering connections, knowledge and appreciation of the 
+        wild resources around us all, with a few good recipes in the mix.</p>
+
+        <p>We hope you enjoy the evolution of this project and welcome your 
+        contributions, for futher information and enquiries;
+        Please visit: www.weedyconnection.com or contact info@weedyconnection.comp</p>
+        </p>
+    </div>
+    <div class="container container-header">
         <a href="/">
-            <img src="img/logo.png">
+            <img class="logo" src="img/logo.png">
         </a>
-        <a class="instagram" href="https://instagram.com/oauth/authorize/?client_id=2263f091c81742ceb20d2d3ee57197a0&redirect_uri=http://wildsyd.dev:9999&response_type=token">Login to Instagram</a>
+        <div class="login">
+            <a class="instagram" href="/">Logout</a>
+        </div>
         <form id="tag-search">
             <input type="textfield" name="tag-search" placeholder="Search for a tag ..." />
             <input type="submit" value="Search" />
         </form>
+    </div>
+    <div class="container container-sidebar">
+        <a href="/" class="info info-about">About</a>
     </div>
     <div id="map-canvas" />
 </body>
