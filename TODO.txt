@@ -1,0 +1,5 @@
+- info window style (bubbly, contrast)
+- location for name (hover etc.) instead of user
+- logo and layout styles
+- search indicator
+- location search box
