@@ -33,7 +33,7 @@
 
         .logo {
             /*float: left;*/
-            width: 10%;
+            width: 100px;
         }
 
         .login {
@@ -185,13 +185,75 @@
             width: 6em;
             /*top: 0.5em;*/
         }
+
+        #tag-search-spin {
+            /*width: 80px;*/
+            float: left;
+            padding-top: 3em;
+            padding-left: 18em;
+        }
     </style>
     <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
     <link rel="stylesheet" type="text/css" href="css/jquery-ui.css" />
     <link rel="stylesheet" type="text/css" href="css/jquery.ui.dialog.css" />
+</head>
+<body>
+    <div id="dialog-confirm" title="Connect to Instagram">
+  <p><span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span>Connect to Instagram to see latest #wildsydney finds.</p>
+</div>
+
+    <div id="about" title="About">
+        <h2>About<h2>
+        <p>The #WildSydney food map is a user generated initiative, mapping the
+        free food and medicine plants (both native and non native) living in the
+        Sydney basin. Following many years of experience providing workshops
+        and tours educating the public on the useful weeds to be found and
+        foraged in the urban landscape, Naturalist Diego Bonetto in collaboration
+        with producer Adrian O'Doherty have created a reliable and extended
+        map 'harvesting' photographs from instagram to provide a platform for
+        sharing location and seasonal information. The development of the
+        Instagram and Google map API mashup was made possible thanks to Boris Gordon.</p>
+
+        <p>Responding to ever-growing interest of the catering industry, gardeners, 
+        alternative medicine practitioners and sustainability advocates,
+        #WildSydney will provide an online resource where people can engage 
+        by positively identifying a variety of plant species, learn about the plants 
+        uses and locate safe and clean gathering locations.</p>
+
+        <p>Why? We believe Dandelions make the best coffee, but do we know where 
+        to collect them from the wild? #wildsydney will facilitate this exchange of 
+        information, fostering connections, knowledge and appreciation of the 
+        wild resources around us all, with a few good recipes in the mix.</p>
+
+        <p>We hope you enjoy the evolution of this project and welcome your 
+        contributions, for futher information and enquiries;
+        Please visit: www.weedyconnection.com or contact info@weedyconnection.comp</p>
+        </p>
+    </div>
+    <div class="container container-header">
+        <a href="/">
+            <img class="logo" src="img/logo.svg">
+        </a>
+
+        <div id="tag-search">
+            <div id="tag-search-spin"></div>
+            <form>
+                <input type="textfield" name="tag-search" placeholder="Search for a tag ..." />
+                <input type="submit" value="Search" />
+            </form>
+        </div>
+    </div>
+    <div class="container container-sidebar">
+        <a href="#" class="info info-about">About</a>
+        <div class="login">
+            <a class="instagram" href="/">Logout</a>
+        </div>
+    </div>
+    <div id="map-canvas" />
     <script src="js/ig-access.js"></script>
     <script src="js/jquery-1.10.2.js"></script>
     <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+    <script src="js/spin.min.js"></script>
     <script type="text/javascript"
             src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBXWYSYuzbLCbBf7ulR43jd4ZgXuycuk4Y&sensor=true">
     </script>
@@ -217,9 +279,31 @@
             var map = initialize();
             var markers = [];
             var infowindow = new google.maps.InfoWindow();
-            // var info_content = [];
+            var rendering_data = [];
             var path = window.location.href || '';
             var access_token = '';
+
+            var spin_opts = {
+              lines: 9, // The number of lines to draw
+              length: 10, // The length of each line
+              width: 5, // The line thickness
+              radius: 5, // The radius of the inner circle
+              corners: 1, // Corner roundness (0..1)
+              rotate: 0, // The rotation offset
+              direction: 1, // 1: clockwise, -1: counterclockwise
+              color: '#000', // #rgb or #rrggbb
+              speed: 1, // Rounds per second
+              trail: 60, // Afterglow percentage
+              shadow: false, // Whether to render a shadow
+              hwaccel: false, // Whether to use hardware acceleration
+              className: 'spinner', // The CSS class to assign to the spinner
+              zIndex: 2e9, // The z-index (defaults to 2000000000)
+              top: 'auto', // Top position relative to parent in px
+              left: 'auto' // Left position relative to parent in px
+            };
+            var tag_search_target = document.getElementById('tag-search-spin');
+            var spinner = new Spinner(spin_opts);
+
             if (path.split('#').length > 1) {
                 access_token = path.split('#')[1].split('=')[1];
             }
@@ -335,6 +419,7 @@
             }
 
             function createImageGrabber(api) {
+
                 return function () {
 
                     jQuery.ajax({
@@ -344,10 +429,16 @@
                         url: api,
                         success: function (data) {
                             // console.log(data);
+                            if (spinner && !spinner.el) {
+                                spinner.spin(tag_search_target);                                
+                            }
                             var next_page = data.pagination.next_url || '';
                             var grabNextImages = createImageGrabber(next_page);
                             if (!next_page) {
                                 console.log('last page reached');
+                                if (spinner) {
+                                    spinner.stop();
+                                }
                             }
                             else {
                                 renderMarkers(data.data);
@@ -375,56 +466,5 @@
             });
         });
     </script>
-</head>
-<body>
-    <div id="dialog-confirm" title="Connect to Instagram">
-  <p><span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span>Connect to Instagram to see latest #wildsydney finds.</p>
-</div>
-
-    <div id="about" title="About">
-        <h2>ABOUT<h2>
-        <p>The #WildSydney food map is a user generated initiative, mapping the
-        free food and medicine plants (both native and non native) living in the
-        Sydney basin. Following many years of experience providing workshops
-        and tours educating the public on the useful weeds to be found and
-        foraged in the urban landscape, Naturalist Diego Bonetto in collaboration
-        with producer Adrian O'Doherty have created a reliable and extended
-        map 'harvesting' photographs from instagram to provide a platform for
-        sharing location and seasonal information. The development of the
-        Instagram and Google map API mashup was made possible thanks to Boris Gordon.</p>
-
-        <p>Responding to ever-growing interest of the catering industry, gardeners, 
-        alternative medicine practitioners and sustainability advocates,
-        #WildSydney will provide an online resource where people can engage 
-        by positively identifying a variety of plant species, learn about the plants 
-        uses and locate safe and clean gathering locations.</p>
-
-        <p>Why? We believe Dandelions make the best coffee, but do we know where 
-        to collect them from the wild? #wildsydney will facilitate this exchange of 
-        information, fostering connections, knowledge and appreciation of the 
-        wild resources around us all, with a few good recipes in the mix.</p>
-
-        <p>We hope you enjoy the evolution of this project and welcome your 
-        contributions, for futher information and enquiries;
-        Please visit: www.weedyconnection.com or contact info@weedyconnection.comp</p>
-        </p>
-    </div>
-    <div class="container container-header">
-        <a href="/">
-            <img class="logo" src="img/logo.svg">
-        </a>
-
-        <form id="tag-search">
-            <input type="textfield" name="tag-search" placeholder="Search for a tag ..." />
-            <input type="submit" value="Search" />
-        </form>
-    </div>
-    <div class="container container-sidebar">
-        <a href="#" class="info info-about">About</a>
-        <div class="login">
-            <a class="instagram" href="/">Logout</a>
-        </div>
-    </div>
-    <div id="map-canvas" />
 </body>
 </html>
