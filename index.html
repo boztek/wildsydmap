@@ -425,6 +425,9 @@
                             var grabNextImages = createImageGrabber(next_page);
                             if (!next_page) {
                                 // console.log('last page reached');
+                                if (data.data) {
+                                    renderMarkers(data.data);
+                                }
                                 if (spinner) {
                                     spinner.stop();
                                 }
