@@ -32,8 +32,8 @@
         }
 
         .logo {
-            float: left;
-            width: 5%;
+            /*float: left;*/
+            width: 10%;
         }
 
         .login {
@@ -55,7 +55,14 @@
 
         .info {
             font-size: 0.7em;
-            margin: auto auto;
+            margin: 1em auto 1em auto;
+        }
+
+        .login {
+            position: absolute;
+            bottom: 4em;
+            font-size: 0.7em;
+            margin: 3em auto 1em auto;
         }
 
         #dialog-modal, #dialog-confirm {
@@ -404,18 +411,19 @@
     </div>
     <div class="container container-header">
         <a href="/">
-            <img class="logo" src="img/logo.png">
+            <img class="logo" src="img/logo.svg">
         </a>
-        <div class="login">
-            <a class="instagram" href="/">Logout</a>
-        </div>
+
         <form id="tag-search">
             <input type="textfield" name="tag-search" placeholder="Search for a tag ..." />
             <input type="submit" value="Search" />
         </form>
     </div>
     <div class="container container-sidebar">
-        <a href="/" class="info info-about">About</a>
+        <a href="#" class="info info-about">About</a>
+        <div class="login">
+            <a class="instagram" href="/">Logout</a>
+        </div>
     </div>
     <div id="map-canvas" />
 </body>
