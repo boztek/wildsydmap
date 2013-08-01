@@ -56,6 +56,8 @@
         .info {
             font-size: 0.7em;
             margin: 1em auto 1em auto;
+            padding: 0.5em 2em 1em 2em;
+            cursor: pointer; cursor: hand;
         }
 
         .login {
@@ -244,7 +246,7 @@
         </div>
     </div>
     <div class="container container-sidebar">
-        <a href="#" class="info info-about">About</a>
+        <div class="info info-about">About</div>
         <div class="login">
             <a class="instagram" href="/">Logout</a>
         </div>
@@ -326,19 +328,6 @@
                   });
                 return;
             }
-
-            $('.info-about').click(function (e) {
-                $( "#about" ).dialog({
-                      modal: true,
-                      height: 480,
-                      buttons: {
-                        Ok: function() {
-                          $( this ).dialog( "close" );
-                        }
-                      }
-                    });
-                    return false;
-            });
 
             function renderMarkers(data) {
                 for (var i = 0; i < data.length; ++i) {
@@ -462,6 +451,19 @@
                 var grabSearchResults = createImageGrabber(instagram_tag_search_api);
                 grabSearchResults();
 
+                return false;
+            });
+
+            $('.info-about').click(function (e) {
+                $( "#about" ).dialog({
+                      modal: true,
+                      height: 480,
+                      buttons: {
+                        Ok: function() {
+                          $( this ).dialog( "close" );
+                        }
+                      }
+                });
                 return false;
             });
         });
