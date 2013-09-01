@@ -257,6 +257,7 @@
     <script type="text/javascript"
             src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBXWYSYuzbLCbBf7ulR43jd4ZgXuycuk4Y&sensor=true">
     </script>
+    <script src="js/gmaputilityv3/markerclusterer/src/markerclusterer_compiled.js"></script>
     <script type="text/javascript">
         function initialize() {
             // 33.8903° S, 151.1966° E
@@ -278,6 +279,7 @@
         jQuery(function () {
             var map = initialize();
             var markers = [];
+            var markerClusterer = null;
             var infowindow = new google.maps.InfoWindow();
             var rendering_data = [];
             var path = window.location.href || '';
@@ -328,6 +330,9 @@
             }
 
             function renderMarkers(data) {
+                if (markerClusterer) {
+                    markerClusterer.clearMarkers();
+                }
                 for (var i = 0; i < data.length; ++i) {
                     var instagram_data = data[i];
                     // console.log(instagram_data);
@@ -352,7 +357,7 @@
                     };
                     var marker = new google.maps.Marker({
                         position: myLatlng,
-                        map: map,
+//                        map: map,
                         title: full_name,
                         icon: icon
                     });
@@ -403,6 +408,10 @@
                         infowindow = this.info;
                     });
                 }
+                markerClusterer = new MarkerClusterer(map, markers, {
+                    gridSize: null,
+                    maxZoom: 20
+                });
             }
 
             function createImageGrabber(api) {
